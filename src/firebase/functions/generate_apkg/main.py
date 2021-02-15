@@ -37,7 +37,7 @@ def generate_apkg(req):
   d = genanki.Deck(generate_id(), 'oxfordanki')
   m = genanki.Model(
     generate_id(),
-    'My model',
+    'oxfordanki',
     fields=[
       {'name': 'Name'},
       {'name': 'Pos'},
@@ -49,7 +49,7 @@ def generate_apkg(req):
     templates=[
       {
         'name': 'Card 1',
-        'qfmt': '{{Name}} ({{Pos}}) <br> {{Phon}}',
+        'qfmt': '{{Name}} ({{Pos}}) <br> {{Phon}} {{Sound}}',
         'afmt': '{{Definition}} <br> {{Example}}',
       },
       {
