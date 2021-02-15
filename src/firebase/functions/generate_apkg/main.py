@@ -36,7 +36,7 @@ def generate_apkg(req):
   if not words:
     return ('words is required', 400, {})
 
-  d = genanki.Deck(generate_id(), 'vinh')
+  d = genanki.Deck(generate_id(), 'oxfordanki')
   m = genanki.Model(
     generate_id(),
     'My model',
@@ -74,7 +74,7 @@ def generate_apkg(req):
 
   p = genanki.Package(d)
   p.media_files = media_files
-  output_file = "/tmp/" + 'output.apkg'
+  output_file = "/tmp/" + 'oxfordanki.apkg'
   p.write_to_file(output_file)
 
   response = make_response(send_file(output_file, as_attachment=True))
