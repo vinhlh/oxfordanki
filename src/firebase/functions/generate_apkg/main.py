@@ -12,9 +12,10 @@ def generate_id():
   return random.randrange(1 << 30, 1 << 31)
 
 def read_mp3(url):
-  file_path = "/tmp/" + url.split('/')[-1]
+  file_name = url.split('/')[-1]
+  file_path = "/tmp/" + file_name
   urllib.request.urlretrieve(url, file_path)
-  return file_path
+  return file_path, file_name
 
 def generate_apkg(req):
   if req.method == 'OPTIONS':
@@ -61,11 +62,11 @@ def generate_apkg(req):
 
   media_files = []
   for v in words:
-    file_path = read_mp3(v['soundBr'])
+    file_path, file_name = read_mp3(v['soundBr'])
 
     n = genanki.Note(
       model=m,
-      fields=[v['name'], v['pos'], v['definition'], v['example'], "[sound:" + file_path + "]", v['phonBr']])
+      fields=[v['name'], v['pos'], v['definition'], v['example'], "[sound:" + file_name + "]", v['phonBr']])
 
     media_files.append(file_path)
     d.add_note(n)
