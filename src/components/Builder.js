@@ -28,12 +28,12 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DeleteIcon from '@material-ui/icons/Delete'
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar'
+import MuiAlert from '@material-ui/lab/Alert'
 
 import { saveAs } from 'file-saver'
 
-import { database } from '../firebase'
+import { auth, database } from '../firebase'
 
 const Container = styled.div`
   margin: 32px;
@@ -51,6 +51,15 @@ const StyledInput = styled(InputBase)`
 
 const SearchBox = styled(Paper)`
   display: flex;
+`
+
+const Footer = styled.div`
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+  font-size: 14px;
+  text-align: right;
+  margin-top: 32px;
+  padding-top: 32px;
+  color: #666;
 `
 
 const AddWordForm = styled(Paper)`
@@ -82,9 +91,9 @@ const parseHTMLV2 = (html) => {
   const phonAm = entry.querySelector('.phons_n_am .phon').innerText
 
   const pos = entry.querySelector('.webtop .pos').innerText
-  const definitions = [...entry.querySelectorAll('.senses_multiple .def,.sense_single .def')].map(
-    (el) => el.innerText
-  )
+  const definitions = [
+    ...entry.querySelectorAll('.senses_multiple .def,.sense_single .def'),
+  ].map((el) => el.innerText)
   const examplesByDefinition = [...entry.querySelectorAll('.sense')]
     .map((el) => ({
       definition: el.querySelector('.def').innerText,
@@ -118,16 +127,20 @@ const parseHTMLV2 = (html) => {
   }
 }
 
-const sanitize = def => def.replaceAll('/', ' or ').replace(/[.$[\]$]/g, '')
+const sanitize = (def) => def.replaceAll('/', ' or ').replace(/[.$[\]$]/g, '')
 
 const addWord = (user, { name, pos, definition, data }) => {
-  database.ref(`user_words/${user.uid}/${name}/${pos}/${sanitize(definition)}`).set(data)
+  database
+    .ref(`user_words/${user.uid}/${name}/${pos}/${sanitize(definition)}`)
+    .set(data)
 
   database.ref(`user_decks/${user.uid}/${data.deck}/${name}`).set(true)
 }
 
 const deleteWord = (user, { name, pos, definition }) => {
-  database.ref(`user_words/${user.uid}/${name}/${pos}/${sanitize(definition)}`).remove()
+  database
+    .ref(`user_words/${user.uid}/${name}/${pos}/${sanitize(definition)}`)
+    .remove()
 }
 
 const addDeck = (user, name) => {
@@ -151,27 +164,19 @@ const exportToAnki = async (words) => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(words.map(w => ({
-      ...w,
-      pos: shortenPos(w.pos)
-    }))),
+    body: JSON.stringify(
+      words.map((w) => ({
+        ...w,
+        pos: shortenPos(w.pos),
+      }))
+    ),
   })
     .then((r) => r.blob())
     .then((b) => saveAs(b, 'output.apkg'))
     .catch()
 }
 
-// import { UserContext } from '../providers/UserProvider'
-// import { auth } from '../firebase'
-
 function Builder({ user }) {
-  // const user = useContext(UserContext);
-  // return (
-  //   <div>Builder {user.email}
-  //     <a href="#" onClick={() => auth.signOut()}>Log Out</a>
-  //   </div>
-  // )
-
   const [error, setError] = useState(null)
   const [keyword, setKeyword] = useState('')
   const [decks, setDecks] = useState([])
@@ -336,14 +341,7 @@ function Builder({ user }) {
       return null
     }
 
-    const {
-      phonBr,
-      phonAm,
-      soundBr,
-      soundAm,
-      pos,
-      definitions,
-    } = searchResult
+    const { phonBr, phonAm, soundBr, soundAm, pos, definitions } = searchResult
     return (
       <AddWordForm
         component="form"
@@ -508,12 +506,26 @@ function Builder({ user }) {
             </Button>
           </ExportContainer>
         </Grid>
+
+        <Grid item xs={12}>
+          <Footer>
+            Logged in as {user.email} |&nbsp;
+            <a href="#" onClick={() => auth.signOut()}>
+              Logout
+            </a>
+          </Footer>
+        </Grid>
       </Grid>
 
       {renderAddDeckForm()}
 
       <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
-        <MuiAlert elevation={6} variant="filled" onClose={handleClose} severity="error">
+        <MuiAlert
+          elevation={6}
+          variant="filled"
+          onClose={handleClose}
+          severity="error"
+        >
           {error}
         </MuiAlert>
       </Snackbar>
