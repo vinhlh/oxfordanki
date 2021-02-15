@@ -149,7 +149,10 @@ const exportToAnki = async (words) => {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(words),
+    body: JSON.stringify(words.map(w => ({
+      ...w,
+      pos: shortenPos(w.pos)
+    }))),
   })
     .then((r) => r.blob())
     .then((b) => saveAs(b, 'output.apkg'))
