@@ -3,14 +3,14 @@ import 'firebase/auth'
 import 'firebase/database'
 
 const {
-  API_KEY: apiKey,
-  AUTH_DOMAIN: authDomain,
-  DATABASE_URL: databaseURL,
-  PROJECT_ID: projectId,
-  STORAGE_BUCKET: storageBucket,
-  MESSAGING_SENDER_ID: messagingSenderId,
-  APP_ID: appId,
-  MEASUREMENT_ID: measurementId,
+  REACT_APP_API_KEY: apiKey,
+  REACT_APP_AUTH_DOMAIN: authDomain,
+  REACT_APP_DATABASE_URL: databaseURL,
+  REACT_APP_PROJECT_ID: projectId,
+  REACT_APP_STORAGE_BUCKET: storageBucket,
+  REACT_APP_MESSAGING_SENDER_ID: messagingSenderId,
+  REACT_APP_APP_ID: appId,
+  REACT_APP_MEASUREMENT_ID: measurementId,
 } = process.env
 
 const firebaseConfig = {
