@@ -171,7 +171,7 @@ function Builder({ user }) {
   // )
 
   const [error, setError] = useState(null)
-  const [keyword, setKeyword] = useState('beautiful')
+  const [keyword, setKeyword] = useState('')
   const [decks, setDecks] = useState([])
   const [words, setWords] = useState([])
   const [selectedDefinition, setSelectedDefinition] = useState(null)
