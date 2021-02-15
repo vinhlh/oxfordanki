@@ -28,6 +28,8 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DeleteIcon from '@material-ui/icons/Delete'
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
 
 import { saveAs } from 'file-saver'
 
@@ -116,7 +118,7 @@ const parseHTMLV2 = (html) => {
   }
 }
 
-const sanitize = def => def.replaceAll('/', ' or ').replace(/[.$\[\]$]/g, '')
+const sanitize = def => def.replaceAll('/', ' or ').replace(/[.$[\]$]/g, '')
 
 const addWord = (user, { name, pos, definition, data }) => {
   database.ref(`user_words/${user.uid}/${name}/${pos}/${sanitize(definition)}`).set(data)
@@ -178,16 +180,17 @@ function Builder({ user }) {
   const [selectedExample, setSelectedExample] = useState(null)
   const [selectedDeck, setSelectedDeck] = useState('')
   const [customExample, setCustomExample] = useState(null)
-  const [searching, setSearching] = useState(false)
   const [searchResult, setSearchResult] = useState(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [deckName, setDeckName] = useState('')
 
-  const handleChange = (event) => {}
-
   const onSearchChanged = (event) => {
     const kw = event.target.value
     setKeyword(kw)
+  }
+
+  const handleClose = () => {
+    setError(null)
   }
 
   const performSearch = (kw) => {
@@ -196,17 +199,14 @@ function Builder({ user }) {
       .then(parseHTMLV2)
       .then((data) => {
         if (data) {
-          setSearching(false)
           setSearchResult(data)
           return
         }
 
         setError('Not found')
-        setSearching(false)
       })
       .catch((err) => {
         setError(err)
-        setSearching(false)
       })
   }
 
@@ -238,7 +238,7 @@ function Builder({ user }) {
         setWords(words)
       }
     })
-  }, [])
+  }, [keyword, user.uid])
 
   const renderAddDeckForm = () => {
     const handleClose = () => {
@@ -345,7 +345,6 @@ function Builder({ user }) {
       soundAm,
       pos,
       definitions,
-      examplesByDefinition,
     } = searchResult
     return (
       <AddWordForm
@@ -470,7 +469,6 @@ function Builder({ user }) {
                   <TableCell>Word</TableCell>
                   <TableCell align="left">Pos</TableCell>
                   <TableCell align="left">Definition</TableCell>
-                  <TableCell align="left">Example</TableCell>
                   <TableCell align="left">Deck</TableCell>
                   <TableCell align="left">Action</TableCell>
                 </TableRow>
@@ -483,7 +481,6 @@ function Builder({ user }) {
                     </TableCell>
                     <TableCell align="left">{w.pos}</TableCell>
                     <TableCell align="left">{w.definition}</TableCell>
-                    <TableCell align="left">{w.example}</TableCell>
                     <TableCell align="left">{w.deck}</TableCell>
                     <TableCell align="left">
                       <IconButton
@@ -516,6 +513,12 @@ function Builder({ user }) {
       </Grid>
 
       {renderAddDeckForm()}
+
+      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
+        <MuiAlert elevation={6} variant="filled" onClose={handleClose} severity="error">
+          {error}
+        </MuiAlert>
+      </Snackbar>
     </Container>
   )
 }
