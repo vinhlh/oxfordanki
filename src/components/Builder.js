@@ -60,6 +60,7 @@ const Footer = styled.div`
   margin-top: 32px;
   padding-top: 32px;
   color: #666;
+  line-height: 180%;
 `
 
 const AddWordForm = styled(Paper)`
@@ -512,6 +513,10 @@ function Builder({ user }) {
             Logged in as {user.email} |&nbsp;
             <a href="#" onClick={() => auth.signOut()}>
               Logout
+            </a>
+            <br />
+            <a href="https://github.com/vinhlh/oxfordanki" target="__blank">
+              vinhlh/oxfordanki
             </a>
           </Footer>
         </Grid>
