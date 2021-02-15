@@ -116,14 +116,16 @@ const parseHTMLV2 = (html) => {
   }
 }
 
+const sanitize = def => def.replaceAll('/', ' or ').replace(/[.$\[\]$]/g, '')
+
 const addWord = (user, { name, pos, definition, data }) => {
-  database.ref(`user_words/${user.uid}/${name}/${pos}/${definition}`).set(data)
+  database.ref(`user_words/${user.uid}/${name}/${pos}/${sanitize(definition)}`).set(data)
 
   database.ref(`user_decks/${user.uid}/${data.deck}/${name}`).set(true)
 }
 
 const deleteWord = (user, { name, pos, definition }) => {
-  database.ref(`user_words/${user.uid}/${name}/${pos}/${definition}`).remove()
+  database.ref(`user_words/${user.uid}/${name}/${pos}/${sanitize(definition)}`).remove()
 }
 
 const addDeck = (user, name) => {
@@ -504,7 +506,7 @@ function Builder({ user }) {
                 exportToAnki(words)
               }}
             >
-              Export
+              Export apkg
             </Button>
           </ExportContainer>
         </Grid>
