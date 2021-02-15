@@ -519,7 +519,7 @@ function Builder({ user }) {
 
       {renderAddDeckForm()}
 
-      <Snackbar open={error} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={handleClose}>
         <MuiAlert
           elevation={6}
           variant="filled"
