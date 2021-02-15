@@ -211,8 +211,6 @@ function Builder({ user }) {
   }
 
   useEffect(() => {
-    performSearch(keyword)
-
     database.ref('user_decks/' + user.uid).on('value', (snapshot) => {
       const decks = snapshot.val()
       console.warn('decks', decks)
@@ -238,7 +236,7 @@ function Builder({ user }) {
         setWords(words)
       }
     })
-  }, [keyword, user.uid])
+  }, [user.uid])
 
   const renderAddDeckForm = () => {
     const handleClose = () => {
