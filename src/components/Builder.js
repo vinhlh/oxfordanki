@@ -141,7 +141,7 @@ const shortenPos = (pos) =>
   }[pos] || pos)
 
 const exportToAnki = async (words) => {
-  fetch('https://asia-southeast2-speak-37747.cloudfunctions.net/function-1', {
+  fetch(process.env.REACT_APP_FUNCTION_GENERATE_APKG, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -186,7 +186,7 @@ function Builder({ user }) {
   }
 
   const performSearch = (kw) => {
-    fetch('https://asia-southeast2-speak-37747.cloudfunctions.net/searchOnOxford?keyword=' + kw)
+    fetch(process.env.REACT_APP_FUNCTION_SEARCH_ON_OXFORD + kw)
       .then((r) => r.text())
       .then(parseHTMLV2)
       .then((data) => {
