@@ -80,7 +80,7 @@ const parseHTMLV2 = (html) => {
   const phonAm = entry.querySelector('.phons_n_am .phon').innerText
 
   const pos = entry.querySelector('.webtop .pos').innerText
-  const definitions = [...entry.querySelectorAll('.senses_multiple .def')].map(
+  const definitions = [...entry.querySelectorAll('.senses_multiple .def,.sense_single .def')].map(
     (el) => el.innerText
   )
   const examplesByDefinition = [...entry.querySelectorAll('.sense')]
