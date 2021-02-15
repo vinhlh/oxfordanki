@@ -1,6 +1,4 @@
-import json
 import urllib
-import ssl
 import genanki
 import urllib.request
 from flask import send_file, make_response
@@ -14,9 +12,9 @@ def generate_id():
   return random.randrange(1 << 30, 1 << 31)
 
 def read_mp3(url):
-  file_name = "/tmp/" + url.split('/')[-1]
-  urllib.request.urlretrieve(url, file_name)
-  return file_name
+  file_path = "/tmp/" + url.split('/')[-1]
+  urllib.request.urlretrieve(url, file_path)
+  return file_path
 
 def generate_apkg(req):
   if req.method == 'OPTIONS':
@@ -56,20 +54,20 @@ def generate_apkg(req):
       },
       {
         'name': 'Card 2',
-        'qfmt': '{{type:Name}} ({{Pos}}) <br> {{Phon}}',
+        'qfmt': '{{type:Name}} ({{Pos}}) <br> {{Phon}} {{Sound}}',
         'afmt': '{{FrontSide}} <hr id=answer> {{Name}}',
       },
     ])
 
   media_files = []
   for v in words:
-    file_name = read_mp3(v['soundBr'])
+    file_path = read_mp3(v['soundBr'])
 
     n = genanki.Note(
       model=m,
-      fields=[v['name'], v['pos'], v['definition'], v['example'], file_name, v['phonBr']])
+      fields=[v['name'], v['pos'], v['definition'], v['example'], "[sound:" + file_path + "]", v['phonBr']])
 
-    media_files.append(file_name)
+    media_files.append(file_path)
     d.add_note(n)
 
   p = genanki.Package(d)
