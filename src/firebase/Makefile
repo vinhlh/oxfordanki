@@ -2,7 +2,7 @@ run-generate-apkg:
 	functions-framework --target=generate_apkg --source functions/generate_apkg/main.py
 
 deploy-generate-apkg:
-	gcloud functions deploy generate_apkg --runtime python39 --trigger-http --allow-unauthenticated --source functions/generate_apkg/
+	gcloud functions deploy generate_apkg --runtime python39 --trigger-http --allow-unauthenticated --source functions/generate_apkg/ --region asia-southeast2
 
 run-firebase-functions:
 	firebase emulators:start
