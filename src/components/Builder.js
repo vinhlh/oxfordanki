@@ -145,7 +145,6 @@ const deleteWord = (user, { name, pos, definition }) => {
 }
 
 const addDeck = (user, name) => {
-  console.warn('add deck', name)
   database.ref(`user_decks/${user.uid}/${name}`).set(true)
 }
 
@@ -219,7 +218,6 @@ function Builder({ user }) {
   useEffect(() => {
     database.ref('user_decks/' + user.uid).on('value', (snapshot) => {
       const decks = snapshot.val()
-      console.warn('decks', decks)
       if (decks) {
         setDecks(decks)
       }
@@ -227,7 +225,6 @@ function Builder({ user }) {
 
     database.ref('user_words/' + user.uid).on('value', (snapshot) => {
       const rawWords = snapshot.val()
-      console.warn('rawWords', rawWords)
       if (rawWords) {
         const words = []
         Object.entries(rawWords).forEach(([name, poss]) => {
@@ -238,7 +235,6 @@ function Builder({ user }) {
           })
         })
 
-        console.warn('words', words)
         setWords(words)
       }
     })
