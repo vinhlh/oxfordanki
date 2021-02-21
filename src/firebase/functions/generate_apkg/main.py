@@ -30,15 +30,17 @@ def generate_apkg(req):
 
     return ('', 204, headers)
 
-  words = req.get_json()
+  json = req.get_json()
+  deck = json['deck'] if json['deck'] else 'oxfordanki'
+  words = json['words']
 
   if not words:
     return ('words is required', 400, {})
 
-  d = genanki.Deck(generate_id(), 'oxfordanki')
+  d = genanki.Deck(deck_id=generate_id(), name=deck)
   m = genanki.Model(
-    generate_id(),
-    'oxfordanki',
+    model_id=generate_id(),
+    name=deck,
     fields=[
       {'name': 'Name'},
       {'name': 'Pos'},

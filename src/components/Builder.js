@@ -157,24 +157,29 @@ const shortenPos = (pos) =>
     preposition: 'prep',
   }[pos] || pos)
 
-const exportToAnki = async (words) => {
+const exportToAnki = async (deckFilter, words) => {
   fetch(process.env.REACT_APP_FUNCTION_GENERATE_APKG, {
     method: 'POST',
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(
-      words.map((w) => ({
-        ...w,
-        pos: shortenPos(w.pos),
-      }))
-    ),
+    body: JSON.stringify({
+      deck: deckFilter,
+      words: words
+        .filter((w) => deckFilter === ALL_DECKS || w.deck === deckFilter)
+        .map((w) => ({
+          ...w,
+          pos: shortenPos(w.pos),
+        })),
+    }),
   })
     .then((r) => r.blob())
     .then((b) => saveAs(b, 'output.apkg'))
     .catch()
 }
+
+const ALL_DECKS = 'ALL_DECKS'
 
 function Builder({ user }) {
   const [error, setError] = useState(null)
@@ -188,6 +193,7 @@ function Builder({ user }) {
   const [searchResult, setSearchResult] = useState(null)
   const [openDialog, setOpenDialog] = useState(false)
   const [deckName, setDeckName] = useState('')
+  const [deckFilter, setDeckFilter] = useState(ALL_DECKS)
 
   const onSearchChanged = (event) => {
     const kw = event.target.value
@@ -367,7 +373,7 @@ function Builder({ user }) {
                 {d}
               </MenuItem>
             ))}
-            <MenuItem value="add">Add new deck</MenuItem>
+            <MenuItem value="add">+ Add new deck</MenuItem>
           </Select>
         </StyledFormControl>
 
@@ -455,6 +461,24 @@ function Builder({ user }) {
           {renderAddWordForm()}
         </Grid>
         <Grid item xs={7}>
+          <StyledFormControl>
+            <InputLabel>Deck</InputLabel>
+            <Select
+              value={deckFilter}
+              onChange={(event) => {
+                const { value } = event.target
+                setDeckFilter(value)
+              }}
+            >
+              <MenuItem value={ALL_DECKS}>All decks</MenuItem>
+              {Object.keys(decks).map((d) => (
+                <MenuItem key={d} value={d}>
+                  {d}
+                </MenuItem>
+              ))}
+            </Select>
+          </StyledFormControl>
+
           <TableContainer component={Paper}>
             <Table stickyHeader aria-label="simple table">
               <TableHead>
@@ -467,26 +491,30 @@ function Builder({ user }) {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {words.map((w) => (
-                  <TableRow key={`${w.name}-${w.pos}-${w.definition}`}>
-                    <TableCell component="th" scope="row">
-                      {w.name}
-                    </TableCell>
-                    <TableCell align="left">{w.pos}</TableCell>
-                    <TableCell align="left">{w.definition}</TableCell>
-                    <TableCell align="left">{w.deck}</TableCell>
-                    <TableCell align="left">
-                      <IconButton
-                        aria-label="delete"
-                        onClick={() => {
-                          deleteWord(user, w)
-                        }}
-                      >
-                        <DeleteIcon />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {words
+                  .filter(
+                    (w) => deckFilter === ALL_DECKS || w.deck === deckFilter
+                  )
+                  .map((w) => (
+                    <TableRow key={`${w.name}-${w.pos}-${w.definition}`}>
+                      <TableCell component="th" scope="row">
+                        {w.name}
+                      </TableCell>
+                      <TableCell align="left">{w.pos}</TableCell>
+                      <TableCell align="left">{w.definition}</TableCell>
+                      <TableCell align="left">{w.deck}</TableCell>
+                      <TableCell align="left">
+                        <IconButton
+                          aria-label="delete"
+                          onClick={() => {
+                            deleteWord(user, w)
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </TableContainer>
@@ -496,7 +524,7 @@ function Builder({ user }) {
               color="primary"
               variant="contained"
               onClick={() => {
-                exportToAnki(words)
+                exportToAnki(deckFilter, words)
               }}
             >
               Export apkg
