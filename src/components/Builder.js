@@ -42,6 +42,7 @@ const Container = styled.div`
 const ExportContainer = styled.div`
   margin-top: 16px;
   display: flex;
+  margin-bottom: 80px;
 `
 
 const StyledInput = styled(InputBase)`
@@ -142,6 +143,16 @@ const deleteWord = (user, { name, pos, definition }) => {
   database
     .ref(`user_words/${user.uid}/${name}/${pos}/${sanitize(definition)}`)
     .remove()
+}
+
+const deleteDeck = (user, deck, words) => {
+  database.ref(`user_decks/${user.uid}/${deck}`).remove()
+
+  words
+    .filter((w) => w.deck === deck)
+    .forEach((w) => {
+      deleteWord(user, w)
+    })
 }
 
 const addDeck = (user, name) => {
@@ -530,6 +541,36 @@ function Builder({ user }) {
               Export apkg
             </Button>
           </ExportContainer>
+
+          <TableContainer component={Paper}>
+            <Table stickyHeader aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell>Deck</TableCell>
+                  <TableCell align="left">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {Object.keys(decks).map((d) => (
+                  <TableRow key={d}>
+                    <TableCell component="th" scope="row">
+                      {d}
+                    </TableCell>
+                    <TableCell align="left">
+                      <IconButton
+                        aria-label="delete"
+                        onClick={() => {
+                          deleteDeck(user, d, words)
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Grid>
 
         <Grid item xs={12}>
