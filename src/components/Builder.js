@@ -543,7 +543,7 @@ function Builder({ user }) {
           </ExportContainer>
 
           <TableContainer component={Paper}>
-            <Table stickyHeader aria-label="simple table">
+            <Table stickyHeader aria-label="simple table" size="small">
               <TableHead>
                 <TableRow>
                   <TableCell>Deck</TableCell>
