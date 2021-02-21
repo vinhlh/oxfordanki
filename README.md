@@ -2,7 +2,7 @@
 
 Manage and generate Anki cards from Oxford dictionaries
 
-Use the application there https://oxfordanki.netlify.app/
+Use the application there https://anki.vinh.rocks/
 
 ## Features
 
